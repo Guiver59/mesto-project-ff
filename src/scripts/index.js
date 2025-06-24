@@ -1,7 +1,7 @@
 import './../styles/index.css';
 import {initialCards} from './../scripts/cards.js';
 import {deleteCard, likeCard, createCard} from './../components/card.js';
-import {showPopupHandler, closePopupListener} from './../components/modal.js'
+import {showPopupHandler, closePopupListener, closePopupHandler} from './../components/modal.js'
 
 const editBtn = document.querySelector('.profile__edit-button');
 const addBtn = document.querySelector('.profile__add-button');
@@ -17,65 +17,63 @@ const formAdd = document.querySelector('.popup__form[name="new-place"]');
 const nameImgInput = formAdd.querySelector('.popup__input_type_card-name');
 const linkImgInput = formAdd.querySelector('.popup__input_type_url');
 
-function handleFormSubmit(evt) {
+function handleProfileFormSubmit(evt) {
     evt.preventDefault(); 
-    let newName = nameInput.value;
-    let newDesc = descInput.value;
-    let profTitle = document.querySelector('.profile__title');
-    let profDesc = document.querySelector('.profile__description');
+    const newName = nameInput.value;
+    const newDesc = descInput.value;
+    const profTitle = document.querySelector('.profile__title');
+    const profDesc = document.querySelector('.profile__description');
     profTitle.textContent = newName;
     profDesc.textContent = newDesc;
-    popupEdit.classList.remove('popup_is-opened');
+    closePopupHandler(popupEdit);
+    //popupEdit.classList.remove('popup_is-opened');
 }
 
 function handleFormAdd(evt) {
     evt.preventDefault(); 
-    let newImgName = nameImgInput.value;
-    let newLink = linkImgInput.value;
-    let cardDesc = {};
+    const newImgName = nameImgInput.value;
+    const newLink = linkImgInput.value;
+    const cardDesc = {};
     cardDesc.name = newImgName;
     cardDesc.link = newLink;
-    let newCard = createCard(cardDesc, deleteCard, likeCard, openCard);
+    const newCard = createCard(cardDesc, deleteCard, likeCard, openCard);
     cardContainer.prepend(newCard);
-    popupAdd.classList.remove('popup_is-opened');
+    //popupAdd.classList.remove('popup_is-opened');
+    closePopupHandler(popupAdd);
     formAdd.reset();
 }
 
 //функция просмотра карточки
-function openCard(card){  
+function openCard(card, cardName, imgLink){  
   showPopupHandler(popupImg);
-  let img = popupImg.querySelector('.popup__image');
-  let cardImg = card.querySelector('.card__image');
+  const img = popupImg.querySelector('.popup__image');
   if(img)
   {
-    img.src = cardImg.src;
-    img.alt = cardImg.alt;
+    img.src = imgLink;
+    img.alt = cardName;
   }
-  let popupCaption = popupImg.querySelector('.popup__caption');
+  const popupCaption = popupImg.querySelector('.popup__caption');
   if(popupCaption) {
-    let title = card.querySelector('.card__title');
-    if(title) {
-      popupCaption.textContent = title.textContent;
-    }
+    popupCaption.textContent = cardName;
   }
 }
 
 // Вывести карточки на страницу
-let cardContainer = document.querySelector('.places__list');
+const cardContainer = document.querySelector('.places__list');
 initialCards.forEach((item) => {
-  let newCard = createCard(item, deleteCard, likeCard, openCard);
+  const newCard = createCard(item, deleteCard, likeCard, openCard);
   cardContainer.append(newCard);
 });
 
 editBtn.addEventListener('click', function(evt){
   showPopupHandler(popupEdit);
-  let nameInput = popupEdit.querySelector('.popup__input_type_name');
-  let profTitle = document.querySelector('.profile__title');
+  const nameInput = popupEdit.querySelector('.popup__input_type_name');
+  const profTitle = document.querySelector('.profile__title');
   if(nameInput && profTitle) {
     nameInput.value = profTitle.textContent;
   }
-  let descInput = popupEdit.querySelector('.popup__input_type_description');
-  let profDesc = document.querySelector('.profile__description');
+  const descInput = popupEdit.querySelector('.popup__input_type_description');
+  const profDesc = document.querySelector('.profile__description');
   if(descInput && profDesc) {
     descInput.value = profDesc.textContent;
   }
@@ -108,5 +106,5 @@ closePopupListener(popupAdd);
 closePopupListener(popupEdit);
 closePopupListener(popupImg);
 
-formEdit.addEventListener('submit', handleFormSubmit); 
+formEdit.addEventListener('submit', handleProfileFormSubmit); 
 formAdd.addEventListener('submit', handleFormAdd); 

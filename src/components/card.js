@@ -9,7 +9,7 @@ function deleteCard(card) {
 
 //функция лайка
 function likeCard(card) {
-  let likeBtn = card.querySelector('.card__like-button');
+  const likeBtn = card.querySelector('.card__like-button');
   if(likeBtn) {
     likeBtn.classList.toggle('card__like-button_is-active');
   }
@@ -27,7 +27,7 @@ function createCard(cardData, delFunc, likeFunc, openFunc) {
   newCardImage.alt = cardData.name;
   newCardDeleteButton.addEventListener('click', (evt) => { delFunc(newCard)});   
   newCardLikeButton.addEventListener('click', (evt) => { likeFunc(newCard)});   
-  newCardImage.addEventListener('click', (evt) => { openFunc(newCard)});
+  newCardImage.addEventListener('click', (evt) => { openFunc(newCard, cardData.name, cardData.link)});
   newCardTitle.textContent = cardData.name;
 
   return newCard;
