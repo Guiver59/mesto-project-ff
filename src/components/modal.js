@@ -1,9 +1,10 @@
 
 const closePopupEsc = function(evt){
   if(evt.key === 'Escape') {
-    let open_popup = document.querySelector('.popup_is-opened');
+    const open_popup = document.querySelector('.popup_is-opened');
     if(open_popup) {
-      open_popup.classList.remove('popup_is-opened');
+      //open_popup.classList.remove('popup_is-opened');
+      closePopupHandler(open_popup);
     }
   }
 };
