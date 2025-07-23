@@ -1,6 +1,6 @@
 import "./../styles/index.css";
 //import {initialCards} from './../scripts/cards.js';
-import { removeCard, reactCard, createCard } from "./../components/card.js";
+import { createCard } from "./../components/card.js";
 import {
   showPopupHandler,
   closePopupListener,
@@ -16,6 +16,9 @@ import {
   saveUserInfo,
   addCard,
   updateAvatar,
+  deleteCard,
+  likeCard,
+  unlikeCard,
 } from "./../components/api.js";
 
 const profImg = document.querySelector(".profile__image");
@@ -27,7 +30,6 @@ const popupAdd = document.querySelector(".popup_type_new-card");
 const popupImg = document.querySelector(".popup_type_image");
 const popupNewAvatar = document.querySelector(".popup_type_new_avatar");
 const popupDelete = document.querySelector(".popup_type_delete_card");
-
 //
 const formEdit = document.querySelector('.popup__form[name="edit-profile"]');
 const nameInput = formEdit.querySelector(".popup__input_type_name");
@@ -41,6 +43,13 @@ const cardContainer = document.querySelector(".places__list");
 //
 const formAvatar = document.querySelector('.popup__form[name="new-avatar"]');
 const newAvatarURL = document.querySelector(".popup__input_type_url_avatar");
+//
+const deleteBtn = popupDelete.querySelector(".popup__button");
+const popupImage = popupImg.querySelector(".popup__image");
+const popupImageCaption = popupImg.querySelector(".popup__caption");
+//
+const profTitle = document.querySelector(".profile__title");
+const profDesc = document.querySelector(".profile__description");
 
 const userInfo = {
   about: "",
@@ -67,22 +76,60 @@ const validationConfig = {
   errorClass: "popup__error_visible",
 };
 
+//
+let cardForDel;
+function handleCardDeleteSubmit(evt) {
+  //console.log(cardForDel._id);
+  deleteCard(cardForDel)
+    .then((res) => {
+      cardForDel.remove();
+      closePopupHandler(popupDelete);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+// Функция удаления карточки
+function removeCard(card) {
+  cardForDel = card;
+  showPopupHandler(popupDelete);
+}
+
+
+//функция лайка
+function reactCard(card) {
+  const newCardLikeCount = card.querySelector(".card__like-count");  
+  const likeBtn = card.querySelector(".card__like-button");
+  if (likeBtn) {
+    if (likeBtn.classList.contains("card__like-button_is-active")) {
+      unlikeCard(card)
+        .then((card) => {
+          likeBtn.classList.remove("card__like-button_is-active");
+          newCardLikeCount.textContent = card.likes.length;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      likeCard(card)
+        .then((card) => {
+          likeBtn.classList.add("card__like-button_is-active");
+          newCardLikeCount.textContent = card.likes.length;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
+}
+
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   formEditBtn.textContent = "Сохранение...";
   const newName = nameInput.value;
   const newDesc = descInput.value;
-  const promisSaveUserInfo = new Promise(function (resolve, reject) {
-    saveUserInfo({ name: newName, about: newDesc })
-      .then((res) => {
-        //return res
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-  promisSaveUserInfo
+  saveUserInfo({ name: newName, about: newDesc })
     .then((newUserData) => {
       const profTitle = document.querySelector(".profile__title");
       const profDesc = document.querySelector(".profile__description");
@@ -95,8 +142,7 @@ function handleProfileFormSubmit(evt) {
     })
     .finally(() => {
       formEditBtn.textContent = "Сохранить";
-    });
-  //popupEdit.classList.remove('popup_is-opened');
+    });    
 }
 
 function handleFormAdd(evt) {
@@ -107,15 +153,7 @@ function handleFormAdd(evt) {
   cardDesc.name = newImgName;
   cardDesc.link = newLink;
 
-  new Promise((resolve, reject) => {
-    addCard(cardDesc)
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  })
+  addCard(cardDesc)
     .then((newCardData) => {
       console.log(newCardData);
       const newCard = createCard(
@@ -132,22 +170,14 @@ function handleFormAdd(evt) {
     })
     .catch((err) => {
       console.log(err);
-    });
+    });   
 }
 
 function handleEditAvatar(evt) {
   evt.preventDefault();
   const newAvatarUrl = newAvatarURL.value;
-  new Promise((resolve, reject) => {
-    updateAvatar(newAvatarUrl)
-      .then((userInfo) => {
-        resolve(userInfo);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  })
-    .then((newUserInfo) => {
+  updateAvatar(newAvatarUrl)
+      .then((newUserInfo) => {
       //console.log(userInfo);
       updateUserInfo(newUserInfo);
       setUserInfo(userInfo);
@@ -156,40 +186,28 @@ function handleEditAvatar(evt) {
     })
     .catch((err) => {
       console.log(err);
-    });
+    });    
 }
 
 //функция просмотра карточки
 function openCard(cardName, imgLink) {
   showPopupHandler(popupImg);
-  const img = popupImg.querySelector(".popup__image");
-  if (img) {
-    img.src = imgLink;
-    img.alt = cardName;
+  //const img = popupImg.querySelector(".popup__image");
+  if (popupImage) {
+    popupImage.src = imgLink;
+    popupImage.alt = cardName;
   }
-  const popupCaption = popupImg.querySelector(".popup__caption");
-  if (popupCaption) {
-    popupCaption.textContent = cardName;
+  if (popupImageCaption) {
+    popupImageCaption.textContent = cardName;
   }
 }
 
 function setUserInfo(userInfo) {
   //console.log(userInfo);
-  const profTitle = document.querySelector(".profile__title");
-  const profDesc = document.querySelector(".profile__description");
   profTitle.textContent = userInfo.name;
   profDesc.textContent = userInfo.about;
   profImg.style.backgroundImage = `url(${userInfo.avatar})`;
 }
-
-/*const setEventListeners = (formElement) => {
-  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-  inputList.forEach((inputElement) => {
-    inputElement.addEventListener('input', () => {
-      isValid(formElement, inputElement)
-    });
-  });
-}; */
 
 // Вывести карточки на страницу
 function setCards(initialCards) {
@@ -206,20 +224,21 @@ function setCards(initialCards) {
   });
 }
 
-editBtn.addEventListener("click", function (evt) {
+function editProfileHandler(evt)
+{
   showPopupHandler(popupEdit);
   const nameInput = popupEdit.querySelector(".popup__input_type_name");
-  const profTitle = document.querySelector(".profile__title");
   if (nameInput && profTitle) {
     nameInput.value = profTitle.textContent;
   }
   const descInput = popupEdit.querySelector(".popup__input_type_description");
-  const profDesc = document.querySelector(".profile__description");
   if (descInput && profDesc) {
     descInput.value = profDesc.textContent;
   }
   clearValidation(popupEdit, validationConfig);
-});
+}
+
+editBtn.addEventListener("click", editProfileHandler);
 
 addBtn.addEventListener("click", function (evt) {
   showPopupHandler(popupAdd);
@@ -240,30 +259,21 @@ closePopupListener(popupDelete);
 formEdit.addEventListener("submit", handleProfileFormSubmit);
 formAdd.addEventListener("submit", handleFormAdd);
 formAvatar.addEventListener("submit", handleEditAvatar);
+deleteBtn.addEventListener("click", handleCardDeleteSubmit);
 
 enableValidation(validationConfig);
 
-const promiseLoadUser = new Promise(function (resolve, reject) {
+/*const promiseLoadUser = new Promise(function (resolve, reject) {
   const user = loadUserInfo();
   resolve(user);
 });
 const promiseLoadCards = new Promise(function (resolve, reject) {
   const cards = loadCards();
   resolve(cards);
-});
+});*/
 
-Promise.all([promiseLoadUser, promiseLoadCards]).then((data) => {
-  //console.log(value);
-  const userData = data[0];
+Promise.all([loadUserInfo(), loadCards()]).then(([userData, cards]) => {
   updateUserInfo(userData);
-  /*userInfo.about = userData.about,
-    userInfo.avatar = userData.avatar,
-    userInfo.cohort = userData.cohort,
-    userInfo.name = userData.name,
-    userInfo._id = userData._id*/
   setUserInfo(userData);
-
-  const cards = data[1];
-  //console.log(cards);
   setCards(cards);
 });

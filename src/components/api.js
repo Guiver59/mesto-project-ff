@@ -21,15 +21,7 @@ const loadUserInfo = () => {
       authorization: config.headers.authorization,
     },
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .then((json) => {
-      return json;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 const loadCards = () => {
@@ -38,15 +30,7 @@ const loadCards = () => {
       authorization: config.headers.authorization,
     },
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .then((json) => {
-      return json;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 const saveUserInfo = (userInfo) => {
@@ -61,12 +45,7 @@ const saveUserInfo = (userInfo) => {
       about: userInfo.about,
     }),
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 const addCard = (newCard) => {
@@ -82,13 +61,7 @@ const addCard = (newCard) => {
         link: newCard.link,
       }),
     })
-      .then((res) => {
-        return checkResult(res);
-      })
-      //.then((json)=>{console.log(json);})
-      .catch((err) => {
-        console.log(err);
-      })
+      .then(checkResult)
   );
 };
 
@@ -99,12 +72,7 @@ const deleteCard = (card) => {
       authorization: config.headers.authorization,
     },
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 const likeCard = (card) => {
@@ -114,12 +82,7 @@ const likeCard = (card) => {
       authorization: config.headers.authorization,
     },
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 const unlikeCard = (card) => {
@@ -129,12 +92,7 @@ const unlikeCard = (card) => {
       authorization: config.headers.authorization,
     },
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 const updateAvatar = (newAvatar) => {
@@ -148,15 +106,7 @@ const updateAvatar = (newAvatar) => {
       avatar: newAvatar,
     }),
   })
-    .then((res) => {
-      return checkResult(res);
-    })
-    .then((json) => {
-      return json;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .then(checkResult);
 };
 
 export {

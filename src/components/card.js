@@ -1,87 +1,16 @@
 import { deleteCard, likeCard, unlikeCard } from "./../components/api.js";
-import {
+/*import {
   showPopupHandler,
   closePopupListener,
   closePopupHandler,
-} from "./../components/modal.js";
+} from "./../components/modal.js";*/
 
 // Темплейт карточки
 const cardTemplare = document.querySelector("#card-template");
 const cardTemplateContent = cardTemplare.content;
 
-// Функция удаления карточки
-function removeCard(card, popudDel) {
-  showPopupHandler(popudDel);
-  const btn = popudDel.querySelector(".popup__button");
-  btn.addEventListener("click", (evt) => {
-    //console.log(card._id);
-    new Promise((resolve, reject) => {
-      deleteCard(card)
-        .then((res) => {
-          resolve(res);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    })
-      .then(() => {
-        card.remove();
-        closePopupHandler(popudDel);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-  //console.log(card._id);
-  /*new Promise((resolve,reject)=>{      
-      deleteCard(card)
-        .then((res)=>{
-          resolve(res);
-        })
-        .catch((err)=>{
-          reject(err);
-        })
-    }
-  )
-  .then(()=>{
-    card.remove();
-  })
-  .catch((err)=>{console.log(err)});*/
-}
-
-//функция лайка
-function reactCard(card) {
-  const likeBtn = card.querySelector(".card__like-button");
-  const newCardLikeCount = card.querySelector(".card__like-count");
-  if (likeBtn) {
-    if (likeBtn.classList.contains("card__like-button_is-active")) {
-      new Promise((resolve, reject) => {
-        unlikeCard(card)
-          .then((card) => {
-            likeBtn.classList.remove("card__like-button_is-active");
-            newCardLikeCount.textContent = card.likes.length;
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      });
-    } else {
-      new Promise((resolve, reject) => {
-        likeCard(card)
-          .then((card) => {
-            likeBtn.classList.add("card__like-button_is-active");
-            newCardLikeCount.textContent = card.likes.length;
-          })
-          .catch((err) => {
-            reject(err);
-          });
-      });
-    }
-  }
-}
-
 // Функция создания карточки
-function createCard(cardData, delFunc, likeFunc, openFunc, user_id, popudDel) {
+function createCard(cardData, delFunc, likeFunc, openFunc, user_id ) {
   // DOM узлы
   const newCard = cardTemplateContent.querySelector(".card").cloneNode(true);
   const newCardImage = newCard.querySelector(".card__image");
@@ -110,7 +39,7 @@ function createCard(cardData, delFunc, likeFunc, openFunc, user_id, popudDel) {
   newCardTitle.textContent = cardData.name;
   if (cardData.owner._id === user_id) {
     newCardDeleteButton.addEventListener("click", (evt) => {
-      delFunc(newCard, popudDel);
+      delFunc(newCard);
     });
   } else {
     newCardDeleteButton.disabled = true;
@@ -119,4 +48,4 @@ function createCard(cardData, delFunc, likeFunc, openFunc, user_id, popudDel) {
   return newCard;
 }
 
-export { removeCard, reactCard, createCard };
+export { createCard };
